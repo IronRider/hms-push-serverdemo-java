@@ -16,7 +16,6 @@
 package com.huawei.push.messaging;
 
 import com.alibaba.fastjson.JSONObject;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ResourceBundle;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -39,10 +37,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class HuaweiCredential {
     private static final Logger logger = LoggerFactory.getLogger(HuaweiCredential.class);
 
-    private final String PUSH_AT_URL = ResourceBundle.getBundle("url").getString("token_server");
-
     private String appId;
     private String appSecret;
+    private String tokenServerUrl;
+    private String pushServerUrl;
 
     private String accessToken;
     private long expireIn;
@@ -53,6 +51,8 @@ public class HuaweiCredential {
         this.lock = new ReentrantLock();
         this.appId = builder.appId;
         this.appSecret = builder.appSecret;
+        this.tokenServerUrl = builder.tokenServerUrl;
+        this.pushServerUrl = builder.pushServerUrl;
         if (builder.httpClient == null) {
             httpClient = HttpClients.createDefault();
         } else {
@@ -74,7 +74,7 @@ public class HuaweiCredential {
     private void executeRefresh() throws IOException {
         String requestBody = createRequestBody(appId, appSecret);
 
-        HttpPost httpPost = new HttpPost(PUSH_AT_URL);
+        HttpPost httpPost = new HttpPost(tokenServerUrl);
         StringEntity entity = new StringEntity(requestBody);
         httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         httpPost.setEntity(entity);
@@ -131,6 +131,14 @@ public class HuaweiCredential {
         return appId;
     }
 
+    public String getTokenServerUrl() {
+        return tokenServerUrl;
+    }
+
+    public String getPushServerUrl() {
+        return pushServerUrl;
+    }
+
     /**
      * Builder for constructing {@link HuaweiCredential}.
      */
@@ -141,6 +149,8 @@ public class HuaweiCredential {
     public static class Builder {
         private String appId;
         private String appSecret;
+        private String tokenServerUrl;
+        private String pushServerUrl;
 
         private CloseableHttpClient httpClient;
 
@@ -154,6 +164,16 @@ public class HuaweiCredential {
 
         public Builder setAppSecret(String appSecret) {
             this.appSecret = appSecret;
+            return this;
+        }
+
+        public Builder setTokenServerUrl(String tokenServerUrl) {
+            this.tokenServerUrl = tokenServerUrl;
+            return this;
+        }
+
+        public Builder setPushServerUrl(String pushServerUrl) {
+            this.pushServerUrl = pushServerUrl;
             return this;
         }
 

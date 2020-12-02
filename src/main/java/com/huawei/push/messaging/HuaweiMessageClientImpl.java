@@ -27,7 +27,6 @@ import com.huawei.push.reponse.TopicListResponse;
 import com.huawei.push.reponse.TopicSendResponse;
 import com.huawei.push.util.ResponceCodeProcesser;
 import com.huawei.push.util.ValidatorUtils;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -40,10 +39,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 public class HuaweiMessageClientImpl implements HuaweiMessageClient {
-    private static final String PUSH_URL = ResourceBundle.getBundle("url").getString("push_open_url");
 
     private final String HcmPushUrl;
     private String hcmTopicUrl;
@@ -52,8 +49,8 @@ public class HuaweiMessageClientImpl implements HuaweiMessageClient {
     private final CloseableHttpClient httpClient;
 
     private HuaweiMessageClientImpl(Builder builder) {
-        this.HcmPushUrl = MessageFormat.format(PUSH_URL + "/v1/{0}/messages:send", builder.appId);
-        this.hcmTopicUrl = MessageFormat.format(PUSH_URL + "/v1/{0}/topic:{1}", builder.appId);
+        this.HcmPushUrl = MessageFormat.format(builder.pushServerUrl + "/v1/{0}/messages:send", builder.appId);
+        this.hcmTopicUrl = MessageFormat.format(builder.pushServerUrl + "/v1/{0}/topic:{1}", builder.appId);
 
         ValidatorUtils.checkArgument(builder.httpClient != null, "requestFactory must not be null");
         this.httpClient = builder.httpClient;
@@ -185,6 +182,7 @@ public class HuaweiMessageClientImpl implements HuaweiMessageClient {
         String appId = ImplHuaweiTrampolines.getAppId(app);
         return HuaweiMessageClientImpl.builder()
                 .setAppId(appId)
+                .setPushServerUrl(app.getOption().getCredential().getPushServerUrl())
                 .setHttpClient(app.getOption().getHttpClient())
                 .build();
     }
@@ -196,6 +194,7 @@ public class HuaweiMessageClientImpl implements HuaweiMessageClient {
     static final class Builder {
 
         private String appId;
+        private String pushServerUrl;
         private CloseableHttpClient httpClient;
 
         private Builder() {
@@ -203,6 +202,11 @@ public class HuaweiMessageClientImpl implements HuaweiMessageClient {
 
         public Builder setAppId(String appId) {
             this.appId = appId;
+            return this;
+        }
+
+        public Builder setPushServerUrl(String pushServerUrl) {
+            this.pushServerUrl = pushServerUrl;
             return this;
         }
 

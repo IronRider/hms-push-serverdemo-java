@@ -104,6 +104,31 @@ public class HuaweiApp {
     }
 
     /**
+     * Initializes the {@link HuaweiApp} instance with given appId, appSecret, tokenServerUrl and pushServerUrl
+     *
+     * @return HuaweiApp
+     */
+    private static HuaweiApp initializeApp(
+            String appId,
+            String appSecret,
+            String tokenServerUrl,
+            String pushServerUrl
+    ) {
+        HuaweiCredential credential = HuaweiCredential.builder()
+                .setAppId(appId)
+                .setAppSecret(appSecret)
+                .setTokenServerUrl(tokenServerUrl)
+                .setPushServerUrl(pushServerUrl)
+                .build();
+
+        HuaweiOption option = HuaweiOption.builder()
+                .setCredential(credential)
+                .build();
+
+        return HuaweiApp.getInstance(option);
+    }
+
+    /**
      * Initializes the {@link HuaweiApp} instance using the given option.
      *
      * @throws IllegalStateException if the app instance has already been initialized.
