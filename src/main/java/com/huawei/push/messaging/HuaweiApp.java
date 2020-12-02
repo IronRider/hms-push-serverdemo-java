@@ -108,7 +108,7 @@ public class HuaweiApp {
      *
      * @return HuaweiApp
      */
-    private static HuaweiApp initializeApp(
+    public static HuaweiApp initializeApp(
             String appId,
             String appSecret,
             String tokenServerUrl,
